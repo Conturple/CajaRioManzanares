@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" type="text/css">
+
+
+    <title>Caja Río Manzanares</title>
+
+
+  </head>
+  <body>
+
+    <br><br><br><br>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+          <div class="card card-signin my-5">
+            <div class="card-body">
+              <h5 class="card-title text-center">Nuevo Registro</h5>
+              <form action="/registros/{{ idVet }}/" method="POST" class="form-signin">
+                {% csrf_token %}
+                <div class="form-label-group">
+                  <input type="text"  id="nombreMascota" maxlength="30" name="nombreMascota" class="form-control" placeholder="Mascota" required autofocus>
+                  <label for="nombreMascota">Mascota</label>
+                </div>
+
+                <div class="form-label-group">
+                  <input type="text" id="nombreCliente" maxlength="30" name="nombreCliente" class="form-control" placeholder="Cliente" required>
+                  <label for="nombreCliente">Cliente</label>
+                </div>
+
+                <div class="form-label-group">
+                  <input type="text" id="operacion" maxlength="50" name="operacion" class="form-control" placeholder="Operacion" required>
+                  <label for="operacion">Operación</label>
+                </div>
+
+                <div class="form-label-group">
+                  <input type="number" step="any" id="importe" name="importe" class="form-control" placeholder="Importe" required>
+                  <label for="importe">Importe</label>
+                </div>
+
+                <div class="form-label-group">
+                  <select class="form-control" id="metodoPago" name="metodoPago" required>
+                    <option value="" selected>Método de Pago</option>
+			      	<option value="T" id="metodoPago" name="metodoPago">Tarjeta</option>
+			      	<option value="E" id="metodoPago" name="metodoPago">Efectivo</option>
+                  </select>
+                </div>
+
+                <div class="form-label-group">
+                  <select class="form-control" id="consulta" name="consulta" required>
+                    <option value="" selected>Consulta</option>
+			      	<option value="1" id="consulta" name="consulta">Consulta 1</option>
+			      	<option value="2" id="consulta" name="consulta">Consulta 2</option>
+                  </select>
+                </div>
+
+                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Crear Registro</button>
+
+              </form>
+              <hr class="my-4">
+              <a href="{% url 'index' %}"><button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Volver</button></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+    <script type="text/javascript">
+      function testInput(event) {
+         var value = String.fromCharCode(event.which);
+         var pattern = new RegExp(/[a-zåäö ]/i);
+         return pattern.test(value);
+      }
+
+      function testNumbers(event) {
+         var value = String.fromCharCode(event.which);
+         var pattern = new RegExp(/^[0-9.,]+$/i);
+         return pattern.test(value);
+      }
+
+    $('#nombreMascota').bind('keypress', testInput);
+    $('#nombreCliente').bind('keypress', testInput);
+    $('#operacion').bind('keypress', testInput);
+    $('#importe').bind('keypress', testNumbers);
+
+    </script>
+
+  </body>
+</html>

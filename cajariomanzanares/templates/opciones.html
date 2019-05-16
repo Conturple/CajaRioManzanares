@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" type="text/css">
+
+
+    <title>Caja Río Manzanares</title>
+  </head>
+  <body>
+
+    <br><br><br><br>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+          <div class="card card-signin my-5">
+            <div class="card-body">
+                <h5 class="card-title text-center">Caja Río Manzanares</h5>
+                  <a href="{% url 'registros' idVet  %}"><button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Crear Nuevo Registro</button></a>
+                  <br>
+                  <a href="{% url 'hacerCaja' idVet  %}"><button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Hacer Caja</button></a>
+                  <br>
+                  <a href="{% url 'mostrarCaja' %}"><button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Mostrar Cajas</button></a>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+
+
+  </body>
+</html>

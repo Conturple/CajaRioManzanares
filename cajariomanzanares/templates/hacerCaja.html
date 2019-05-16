@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" type="text/css">
+
+
+    <title>Caja Río Manzanares</title>
+  </head>
+  <body>
+
+    <br><br><br><br>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+          <div class="card card-signin my-5">
+            <div class="card-body">
+              <h5 class="card-title text-center">Nueva Caja</h5>
+              <form action="/hacerCaja/{{ idVet }}/" method="POST" class="form-signin">
+                {% csrf_token %}
+
+
+                {% if existe %}
+                  <div class="alert alert-danger" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                    </button>
+                    <strong>¡¡¡ CUIDADO !!!</strong> Esta caja ya existe
+                  </div>
+                {% endif %}
+
+
+
+
+                {% if noReg %}
+                  <div class="alert alert-danger" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                    </button>
+                    <strong>¡¡¡ CUIDADO !!!</strong> No hay ningún registros para la Consulta {{ consulta }}
+                  </div>
+                {% endif %}
+
+                {% if noReg2 %}
+                  <div class="alert alert-danger" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                    </button>
+                    <strong>¡¡¡ CUIDADO !!!</strong> No exite la caja del día anterior para poder importar las monedas y billetes
+                  </div>
+                {% endif %}
+
+                <div class="form-label-group">
+                  <select class="form-control" id="periodo" name="periodo" required>
+                    <option value="" selected>Periodo de Caja</option>
+			      	<option value="M" id="periodo" name="periodo">Mañana</option>
+			      	<option value="T" id="periodo" name="periodo">Tarde</option>
+                  </select>
+                </div>
+
+                <div class="form-label-group">
+                  <select class="form-control" id="consulta" name="consulta" required>
+                    <option value="" selected>Consulta</option>
+			      	<option value="1" id="consulta" name="consulta">Consulta 1</option>
+			      	<option value="2" id="consulta" name="consulta">Consulta 2</option>
+                  </select>
+                </div>
+
+                <div class="form-label-group">
+                  <input type="number" step="any" maxlength="8" id="impMonedas" name="impMonedas" class="form-control" placeholder="Importe Monedas" required>
+                  <label for="impMonedas">Importe Monedas</label>
+                </div>
+
+                <div class="form-label-group">
+                  <input type="number" step="any" maxlength="8" id="impBilletes" name="impBilletes" class="form-control" placeholder="Importe Billetes" required>
+                  <label for="impBilletes">Importe</label>
+                </div>
+
+                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Crear Caja</button>
+
+              </form>
+              <hr class="my-4">
+              <a href="{% url 'index' %}"><button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Volver</button></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+    <script type="text/javascript">
+      function testNumbers(event) {
+         var value = String.fromCharCode(event.which);
+         var pattern = new RegExp(/^[0-9]+$/i);
+         return pattern.test(value);
+      }
+
+    $('#impMonedas').bind('keypress', testNumbers);
+    $('#impBilletes').bind('keypress', testNumbers);
+
+
+    </script>
+
+
+  </body>
+</html>
