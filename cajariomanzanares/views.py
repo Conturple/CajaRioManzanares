@@ -8,10 +8,21 @@ from django.db import connection
 
 # Create your views here.
 
+
+''' 
+Método de inicio para que se muestre la pantalla inicial.
+Esta pantalla hace referencia a cada una de las veterinarias que componen la cĺinica
+'''
 def index(request):
     return render(request, 'index.html')
 
 
+
+''' 
+Método que en primera instancia muestra el formulario con los campos necesarios para un nuevo REGISTROS
+En segunda instancia, valida el formulario con los datos introducidos. En caso de no introducir correctamente los 
+valores, se muestra un mensaje de error (form is not validated) en el navegador
+'''
 def registros(request, idVet):
 
     if request.method != "POST":
@@ -23,18 +34,18 @@ def registros(request, idVet):
             idRegistro = int(idRegistro[0]) + 1
         except:
             idRegistro = 1
-            # raise Http404("No Tienes ningún cliente dado de alta")
         if idRegistro < 10:
             idRegistro = '00000'+(str(idRegistro))
 
         fechaRegistro = datetime.now()
         fechaRegistro = fechaRegistro.strftime("%Y-%m-%d")
 
+
+        # Validación del formulario para poder guardar un nuevo registro introducido.
+
         if request.POST.get('nombreMascota'):
-            print("Validamos el formulario")
             form = Registros()
             form.idRegistro = idRegistro
-            print("ID VETERINARIO: ", idVet)
             form.idVet = idVet
             form.consulta = request.POST.get('consulta')
             form.fechaRegistro = fechaRegistro
@@ -54,35 +65,28 @@ def registros(request, idVet):
     return render(request, 'index.html', {})
 
 
-
+'''
+Método que muestra las opciones disponible: 
+    1. Crear Nuevo Registro.
+    2. Hacer Caja.
+    3. Mostrar Cajas.
+'''
 def opciones(request, idVet):
-    print("Entra en Opciones   !!!!!")
 
-    for i in Registros.objects.raw('''SELECT idRegistro as idRegistro, max(fechaRegistro) FROM REGISTROS'''):
-        print("RegDiaadfasd: ", i.fechaRegistro)
-        ultFecha = i.fechaRegistro
-
-    #if str(ultFecha) < datetime.now().strftime("%Y-%m-%d"):
-    #    print("No hay registros aún para el día de hoy: ", datetime.now().strftime("%Y-%m-%d"))
-    #    noRegistros = 0
-    #else:
-    #    noRegistros = 1
+    return render(request, 'opciones.html', {'idVet': idVet})
 
 
-    return render(request, 'opciones.html', {'idVet' : idVet} )
-
-
+''' 
+Método que en primera instancia muestra el formulario con los campos necesarios para una nueva CAJA.
+En segunda instancia, valida el formulario con los datos introducidos. En caso de no introducir correctamente los 
+valores, se muestra un mensaje de error (form is not validated) en el navegador
+'''
 def hacerCaja(request, idVet):
-
-    print("Entra en hacerCaja  !!!!!!")
 
     fechaCaja = datetime.now()
     fechaCaja2 = datetime.now() - timedelta(days=1)
     fechaCaja = fechaCaja.strftime("%Y-%m-%d")
     fechaCaja2 = fechaCaja2.strftime("%Y-%m-%d")
-
-    print("Fecha Caja 2: ", fechaCaja2)
-    print("Fecha Caja: ", fechaCaja)
 
     if request.method != "POST":
 
@@ -90,71 +94,49 @@ def hacerCaja(request, idVet):
 
     else:
 
-        cajaDia = Caja.objects.filter(consulta__startswith=request.POST.get('consulta'), periodo__startswith=request.POST.get('periodo'), fechaCaja=fechaCaja).values()
-
-        #for cajaDia in Caja.objects.raw('''SELECT idRegistroCaja as idRegistroCaja From Caja where consulta = %s
-        #                                    and periodo = %s and fechaCaja = %s ''', [request.POST.get('consulta'),
-        #                                                                             request.POST.get('periodo'),
-        #                                                                             fechaCaja2]):
-        print(cajaDia)
+        cajaDia = Caja.objects.filter(consulta__startswith=request.POST.get('consulta'),
+                                      periodo__startswith=request.POST.get('periodo'), fechaCaja=fechaCaja).values()
 
         if cajaDia:
-            print("YA EXISTE LA CAJA")
             existe = 1
             return render(request, 'hacerCaja.html', {'existe': existe, 'idVet': idVet})
         else:
-            print("NO EXISTE LA CAJAAAAAA")
             registrosConsulta = Registros.objects.filter(consulta__startswith=request.POST.get('consulta'),
-                                          fechaRegistro=fechaCaja).values()
-            #for registrosConsulta in Registros.objects.raw('''SELECT idRegistro as idRegistro FROM Registros
-            #                                               where consulta = %s and fechaRegistro = %s ''',
-            #                                               [request.POST.get('consulta'), fechaCaja]):
+                                                         fechaRegistro=fechaCaja).values()
+
             if not registrosConsulta:
-                print("NO HAY REGISTROS PARA PODER HACER LA CAJA")
                 noReg = 1
                 consulta = request.POST.get('consulta')
                 return render(request, 'hacerCaja.html', {'noReg': noReg, 'consulta': consulta})
             else:
-
                 sumaCampoDia = 0
                 for campoDia in Registros.objects.raw(''' SELECT idRegistro as idRegistro FROM Registros 
-                                                             where metodoPago = 'E' and fechaRegistro = %s ''', [fechaCaja]):
-                    sumaCampoDia = sumaCampoDia + float(campoDia.importe)
+                                                             where metodoPago = 'E' and fechaRegistro = %s ''',
+                                                      [fechaCaja]):
 
-                print("sumaCampoDia: ", sumaCampoDia)
+                    sumaCampoDia = sumaCampoDia + float(campoDia.importe)
 
                 cajaRealizada = Caja.objects.filter(fechaCaja=fechaCaja2).values()
 
-                #for cajaRealizada in Caja.objects.raw('''SELECT idRegistroCaja as idRegistroCaja FROM Caja
-                #                                where fechaCaja = %s ''', [fechaCaja2]):
-
-                print("ENTRA EN EL FOR")
-
                 if cajaRealizada:
-                    print("ENTRA EN CAJAREALIZADA.FECHACAJA")
 
                     #   REALIZAR QUERY PARA EL DÍA ANTERIOR AL QUE ACTUALMENTE SE ESTÁ  #
                     sumaCampoTotal = 0
                     for maxFechaCaja in Caja.objects.raw('''SELECT idRegistroCaja as idRegistroCaja FROM Caja
                                                         where fechaCaja = %s ''', [fechaCaja2]):
                         #ultFechaCaja = Caja.objects.filter(mod_date__gt=('fechaRegistro') - timedelta(days=1))
-                        print("MAXFECHA ACTUAL: ", maxFechaCaja.fechaCaja)
                         if maxFechaCaja.fechaCaja is None:
-                            print("entra aqui")
                             sumaCampoTotal = 0
                         else:
                             for campoMonedas in Caja.objects.raw('''SELECT idRegistroCaja as idRegistroCaja FROM Caja
                                                                 where fechaCaja = %s and consulta = %s ''', [fechaCaja2, request.POST.get('consulta')]):
-                                print("Numero de Monedas: ", campoMonedas.impMonedas)
                                 sumaCampoTotal = sumaCampoTotal + int(campoMonedas.impMonedas)
 
                             for campoBilletes in Caja.objects.raw('''SELECT idRegistroCaja as idRegistroCaja FROM Caja
                                                                 where fechaCaja = %s and consulta = %s ''', [fechaCaja2, request.POST.get('consulta')]):
-                                print("Numero de Billetes: ", campoBilletes.impBilletes)
                                 sumaCampoTotal = sumaCampoTotal + int(campoBilletes.impBilletes)
 
 
-                    print("sumaCampoTotal: ", sumaCampoTotal)
                     sumaCampoTotal = sumaCampoTotal + sumaCampoDia
 
 
@@ -163,7 +145,6 @@ def hacerCaja(request, idVet):
                         idRegistroCaja = int(idRegistroCaja[0]) + 1
                     except:
                         idRegistroCaja = 1
-                        # raise Http404("No Tienes ningún cliente dado de alta")
                     if idRegistroCaja < 10:
                         idRegistroCaja = '00000' + (str(idRegistroCaja))
 
@@ -189,7 +170,6 @@ def hacerCaja(request, idVet):
                     else:
                         return HttpResponse("form is not validated")
                 else:
-                    print("NO EXISTE LA CAJA DEL DÍA ANTERIOR")
                     noReg2 = 2
                     consulta = request.POST.get('consulta')
                     return render(request, 'hacerCaja.html', {'noReg2': noReg2, 'consulta': consulta})
@@ -199,13 +179,15 @@ def hacerCaja(request, idVet):
     return render(request, 'index.html')
 
 
-
+''' 
+Método que visualiza en forma de tabla, el conjunto de operaciones que cada una de las consultas ha realizado hasta
+el momento.
+'''
 def mostrarCaja(request):
 
     fechaCaja = datetime.now()
     fechaCaja = fechaCaja.strftime("%Y-%m-%d")
 
-    print("Entra en MOSTRARCAJA !!!!")
 
     cursorPri = connection.cursor()
     cursorSeg = connection.cursor()
